@@ -1,0 +1,29 @@
+{
+  "name": "kicad_parser",
+  "version": "1.0.0",
+  "description": "Parsing S-Expression Kicad files",
+  "main": "out/index.js",
+  "types": "out/index.d.ts",
+  "files": [
+    "out/**/*"
+  ],
+  "scripts": {
+    "gen-parser": "npx peggy -o src/parser/s_expression.js s_expression.pegjs",
+    "build": "npm run gen-parser && npx tsc",
+    "pretest": "npx tsc",
+    "test": "node out/bin/kicad_parser.js ../kicad_pnid_hybrid/main_pnid_hybrid.kicad_sch ./out.html",
+    "prepare": "npm run build"
+  },
+  "bin": {
+    "kicad_parser": "out/bin/kicad_parser.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+  },
+  "devDependencies": {
+    "@types/node": "^17.0.42",
+    "peggy": "^2.0.1",
+    "typescript": "^4.7.3"
+  }
+}
