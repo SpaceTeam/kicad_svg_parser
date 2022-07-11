@@ -6,7 +6,7 @@ import * as kicad_parser from "../index"
 import { platform } from "os";
 
 if (process.argv.length < 3) {
-    console.error("Expected usage: kicad_parser <path to schematic file>")
+    console.error("Expected usage: kicad_svg_parser <path to schematic file>")
     exit(1)
 }
 
