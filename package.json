@@ -1,7 +1,7 @@
 {
-  "name": "kicad_parser",
+  "name": "kicad_svg_parser",
   "version": "1.0.0",
-  "description": "Parsing S-Expression Kicad files",
+  "description": "Converts S-Expression KiCad schematic files to SVG",
   "main": "out/index.js",
   "types": "out/index.d.ts",
   "files": [
@@ -11,19 +11,29 @@
     "gen-parser": "npx peggy -o src/parser/s_expression.js s_expression.pegjs",
     "build": "npm run gen-parser && npx tsc",
     "pretest": "npx tsc",
-    "test": "node out/bin/kicad_parser.js ../kicad_pnid_hybrid/main_pnid_hybrid.kicad_sch ./out.html",
+    "test": "node out/bin/kicad_svg_parser.js ./test_schematic/test_schematic.kicad_sch ./out.html",
     "prepare": "npm run build"
   },
   "bin": {
-    "kicad_parser": "out/bin/kicad_parser.js"
+    "kicad_svg_parser": "out/bin/kicad_svg_parser.js"
   },
-  "author": "",
-  "license": "ISC",
-  "dependencies": {
-  },
+  "author": "Jakob Buchsteiner <jakob.buchsteiner@spaceteam.at>",
+  "license": "MIT",
   "devDependencies": {
     "@types/node": "^17.0.42",
     "peggy": "^2.0.1",
     "typescript": "^4.7.3"
-  }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/SpaceTeam/kicad_svg_parser.git"
+  },
+  "keywords": [
+    "KiCad",
+    "svg"
+  ],
+  "bugs": {
+    "url": "https://github.com/SpaceTeam/kicad_svg_parser/issues"
+  },
+  "homepage": "https://github.com/SpaceTeam/kicad_svg_parser#readme"
 }

@@ -1,4 +1,5 @@
 node_modules
 out/
-src/parser/*
+src/parser/*.js
 out.html
+test_schematic/test_schematic-backups
