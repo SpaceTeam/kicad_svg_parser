@@ -5,11 +5,11 @@ import * as text_transform from "../util/text_transform"
 
 //Debug text justification
 
-function getColor(color: kicad.Color, defaultColor: string): string {
+function getColor(color: kicad.Color | undefined, defaultColor: string): string {
     function mapValue(colorVal: number) {
         return Math.min(Math.max(0,Math.round(colorVal*255)), 255)
     }
-    if (color.r == 0 && color.g == 0 && color.b == 0 && color.a == 0) {
+    if (!color || (color.r == 0 && color.g == 0 && color.b == 0 && color.a == 0)) {
         return defaultColor
     } else {
         return `rgba(${mapValue(color.r)}, ${mapValue(color.r)}, ${mapValue(color.r)}, ${color.a.toFixed(3)})`

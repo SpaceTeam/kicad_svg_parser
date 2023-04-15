@@ -34,7 +34,7 @@ export type StrokeType = "dash" | "dash_dot" | "dash_dot_dot" | "dot" | "default
 export interface Stroke {
     width: number
     type: StrokeType
-    color: Color
+    color?: Color
 }
 
 export type FillType = "none" | "outline" | "background"
