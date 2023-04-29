@@ -185,6 +185,14 @@ export class Bounds {
         const h = this.yMax - this.yMin;
         return `${x} ${y} ${w} ${h}`
     }
+
+    toRectAttributes(): string {
+        const x = this.xMin;
+        const y = this.yMin;
+        const w = this.xMax - this.xMin;
+        const h = this.yMax - this.yMin;
+        return `x="${x}" y="${y}" width="${w}" height="${h}"`
+    }
 }
 
 export function toDeg(radians: number) {

@@ -186,7 +186,7 @@ export function createCircle(circle: kicad.Circle, ctx: SVGContext): [string, st
     return getForeBackground(circle, ctx, element)
 }
 
-export function createProperty(property: kicad.Property, fallbackProperty: kicad.Property | undefined, ctx: SVGContext, rotationCtx: SVGContext): string {
+export function createProperty(symbol: kicad.Symbol, property: kicad.Property, fallbackProperty: kicad.Property | undefined, ctx: SVGContext, rotationCtx: SVGContext): string {
     
     //TODO maybe not fallback (probably not - tested)
     const effects = property.effects// ?? fallbackProperty?.effects
@@ -194,11 +194,11 @@ export function createProperty(property: kicad.Property, fallbackProperty: kicad
     
     const text: kicad.PositionedText = {
         at: property.at,
-        text: property.value,
+        text: ctx.configuration.callbacks.PROPERTY_TEXT?.(symbol, property) ?? property.value,
         effects: effects
     }
-    let attributes = ctx.configuration.callbacks.PROPERTY_ATTRIBUTES?.(property) ?? ""
-    let classes = ctx.configuration.callbacks.PROPERTY_CLASSES?.(property) ?? []
+    let attributes = ctx.configuration.callbacks.PROPERTY_ATTRIBUTES?.(symbol, property) ?? ""
+    let classes = ctx.configuration.callbacks.PROPERTY_CLASSES?.(symbol, property) ?? []
     return internalCreateText(text, attributes, classes, ctx, rotationCtx);
 }
 

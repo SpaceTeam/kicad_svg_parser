@@ -6,6 +6,7 @@ export interface SVGConfiguration {
     styleVars: SVGStyleVars
     callbacks: SVGCallbacks
     createHiddenTexts: boolean
+    createBounds: boolean
     debug: SVGDebugSettings
 }
 
@@ -19,6 +20,7 @@ export interface SVGClasses {
     PIN: string
     PIN_NUMBER: string
     PIN_NAME: string
+    BOUNDS: string
 }
 
 export interface SVGStyleVars {
@@ -35,15 +37,16 @@ export interface SVGDebugSettings {
 }
 
 export interface SVGCallbacks {
-    SYMBOL_ADDITIONAL_ELEMENTS?: SVGElementCallback<kicad.Symbol>
-    SYMBOL_ATTRIBUTES?: SVGAttributeCallback<kicad.Symbol>
-    SYMBOL_CLASSES?: SVGClassesCallback<kicad.Symbol>
-    PROPERTY_ATTRIBUTES?: SVGAttributeCallback<kicad.Property>
-    PROPERTY_CLASSES?: SVGClassesCallback<kicad.Property>
-    NET_ATTRIBUTES?: SVGAttributeCallback<Net>
-    NET_CLASSES?: SVGClassesCallback<Net>
+    SYMBOL_ADDITIONAL_ELEMENTS?: SymbolCallback<string>
+    SYMBOL_ATTRIBUTES?: SymbolCallback<string>
+    SYMBOL_CLASSES?: SymbolCallback<string[]>
+    PROPERTY_ATTRIBUTES?: PropertyCallback<string>
+    PROPERTY_CLASSES?: PropertyCallback<string[]>
+    PROPERTY_TEXT?: PropertyCallback<string>
+    NET_ATTRIBUTES?: NetCallback<string>
+    NET_CLASSES?: NetCallback<string[]>
 }
 
-export type SVGElementCallback<T> = (target: T) => string
-export type SVGAttributeCallback<T> = (target: T) => string
-export type SVGClassesCallback<T> = (target: T) => string[]
+export type SymbolCallback<T> = (symbol: kicad.Symbol) => T
+export type PropertyCallback<T> = (symbol: kicad.Symbol, property: kicad.Property) => T
+export type NetCallback<T> = (net: Net) => T

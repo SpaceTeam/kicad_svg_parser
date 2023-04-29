@@ -18,7 +18,8 @@ export const DEFAULT_SVG_CLASSES: SVGClasses = {
     PROPERTY: "pnid-property",
     PIN: "pnid-pin",
     PIN_NUMBER: "pnid-pin-number",
-    PIN_NAME: "pnid-pin-name"
+    PIN_NAME: "pnid-pin-name",
+    BOUNDS: "pnid-bounds"
 }
 
 export const DEFAULT_SVG_STYLEVARS: SVGStyleVars = {
@@ -39,6 +40,7 @@ const DEFAULT_CONFIGURAITON: SVGConfiguration = {
     styleVars: DEFAULT_SVG_STYLEVARS,
     callbacks: {},
     createHiddenTexts: true,
+    createBounds: true,
     debug: DEFAULT_SVG_DEBUG_SETTINGS
 }
 

@@ -1,6 +1,6 @@
 {
   "name": "kicad_svg_parser",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Converts S-Expression KiCad schematic files to SVG",
   "main": "out/index.js",
   "types": "out/index.d.ts",

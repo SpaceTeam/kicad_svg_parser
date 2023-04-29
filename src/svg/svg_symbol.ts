@@ -49,6 +49,9 @@ export function getSymbolSVG(symbol: kicad.Symbol, symbolIdx: SymbolIdx, ctx: SV
     })
 
     graphicsSvg += bg + fg + text + pins
+    if (ctx.configuration.createBounds) {
+        graphicsSvg += `<rect class="${ctx.configuration.classes.BOUNDS}" ${graphicsCtx.bounds.toRectAttributes()} visibility="hidden"/>`
+    }
     graphicsSvg = `<g class="${ctx.configuration.classes.SYMBOL_GRAPHICS}" transform="translate(${symbolOrigin.x} ${symbolOrigin.y})">\n${indent(graphicsSvg)}\n</g>`
 
     //Bounds are already calculated for correct rotation / mirror, now translate them to the symbol position
@@ -60,7 +63,7 @@ export function getSymbolSVG(symbol: kicad.Symbol, symbolIdx: SymbolIdx, ctx: SV
     let propertyCtx = ctx.child().withClasses(ctx.configuration.classes.PROPERTY)
     let propSvg = "<!-- properties -->\n"
     symbol.$property?.forEach(property => {
-        propSvg += createProperty(property, properties.get(property.id), propertyCtx, symbolContext) + "\n";
+        propSvg += createProperty(symbol, property, properties.get(property.id), propertyCtx, symbolContext) + "\n";
     })
 
     let additionalSvg = "\n" + (ctx.configuration.callbacks.SYMBOL_ADDITIONAL_ELEMENTS?.(symbol) ?? "") + "\n"
