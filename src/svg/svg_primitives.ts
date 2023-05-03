@@ -71,7 +71,7 @@ export function getContextDebugSVG(ctx: SVGContext): string {
 
     svg += `<path d="M ${origin.x} ${origin.y} L ${x.x} ${x.y}" stroke="red" stroke-width="0.2" fill="transparent"/>`
     svg += `<path d="M ${origin.x} ${origin.y} L ${y.x} ${y.y}" stroke="green" stroke-width="0.2" fill="transparent"/>`
-    svg += `<text x="${textAnchor.x}" y="${textAnchor.y}" ${transform} ${justify} ${font}>${angle.toFixed(1)}°, ${ctx.angleSign}/${ctx.effectiveAngleSign}/${ctx.textAngleMultiplier}</text>`
+    svg += `<text x="${textAnchor.x}" y="${textAnchor.y}" ${transform} ${justify} ${font}>${angle.toFixed(1)}°, ${ctx.cs.angleSign}/${ctx.cs.effectiveAngleSign}/${ctx.cs.textAngleMultiplier}</text>`
     return svg;
 }
 
@@ -241,7 +241,7 @@ function internalCreateText(text: kicad.PositionedText, attributes: string, clas
 
 function textJustifyDebug(anchor: Point, textAngle: number, ctx: SVGContext, justify?: Array<kicad.JustifyFlag>) {
     //DEBUG
-    const globalAnchorDirection = text_transform.getGlobalAnchorDirection(textAngle*ctx.textAngleMultiplier, justify, ctx.transform, ctx.angleSign)
+    const globalAnchorDirection = text_transform.getGlobalAnchorDirection(textAngle*ctx.cs.textAngleMultiplier, justify, ctx.cs.transform, ctx.cs.angleSign)
 
     const lineEnd = anchor.add(globalAnchorDirection.multiply(5));
     const debug = `<path d="M ${anchor.x} ${anchor.y} L ${lineEnd.x} ${lineEnd.y}" stroke="yellow" stroke-width="0.2" fill="transparent"/>`

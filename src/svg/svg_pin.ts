@@ -57,10 +57,10 @@ function createPinNumberText(pin: kicad.Pin, ctx: SVGContext) {
 
     //Bring into [0, -360) range
     const effectivePinAngle = normalizeAngle(ctx.angle(0), -360)
-    const pinNumberAngle = normalizeAngle(effectivePinAngle, 180)*rootCtx.effectiveAngleSign/rootCtx.textAngleMultiplier
+    const pinNumberAngle = normalizeAngle(effectivePinAngle, 180)*rootCtx.cs.effectiveAngleSign/rootCtx.cs.textAngleMultiplier
     //If the pin should be under / below the pin in the coordinate system
     const flip = effectivePinAngle <= -179
-    const offset = (flip ? 1 : -1) * ctx.transform.angleDirection() * numberVerticalOffset
+    const offset = (flip ? 1 : -1) * ctx.cs.transform.angleDirection() * numberVerticalOffset
 
     const text: kicad.PositionedText = {
         ...pin.number,

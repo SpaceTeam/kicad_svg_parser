@@ -53,7 +53,7 @@ export class SVGGenerator {
     
     generateSVG(schematic: kicad.Schematic): string {
         const ctx = new SVGContext(this.configuration);
-        ctx.angleSign = -1; //Schematic has reversed angle direction!
+        ctx.cs.angleSign = -1; //Schematic has reversed angle direction!
     
         let symbolIdx = new SymbolIdx()
         symbolIdx.addLibrary(schematic.lib_symbols)

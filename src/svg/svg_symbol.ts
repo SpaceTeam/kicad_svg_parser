@@ -13,7 +13,7 @@ export function getSymbolSVG(symbol: kicad.Symbol, symbolIdx: SymbolIdx, ctx: SV
     //Translation is handled by group transform, mirror and rotate by ctx transform, symbol coordinate systems are flipped around x-axis for some reason
     //This everything in a symbol is a y-Up coordinate system => positive angle sign
     let symbolContext = ctx.child(Transform.MIRROR_X.multiply(ctx.getTransform({x: 0, y: 0, angle: symbol.at.angle}, symbol.mirror)), false)
-    symbolContext.angleSign = 1 
+    symbolContext.cs.angleSign = 1 
 
     //Look up symbols from library
     let libSymbols = symbolIdx.getSymbols(symbol)
@@ -26,7 +26,7 @@ export function getSymbolSVG(symbol: kicad.Symbol, symbolIdx: SymbolIdx, ctx: SV
     let properties: Map<number, kicad.Property> = new Map()
 
     let graphicsCtx = symbolContext.child()
-    graphicsCtx.textAngleMultiplier = 0.1;
+    graphicsCtx.cs.textAngleMultiplier = 0.1;
     let fg = "<!-- FG -->\n"
     let bg = "<!-- BG -->\n"
     let text ="<!-- TEXT -->\n"
