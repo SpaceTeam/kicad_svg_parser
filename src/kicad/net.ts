@@ -1,10 +1,26 @@
-import { Point } from "../util/geom";
+import { SchematicCoordinateSystem } from "../util/coordinate_system";
+import { toRad } from "../util/geom";
+import { Point, Transform } from "../util/geom";
 import * as kicad from "./kicad_types"
+import { SymbolIdx } from "./symbol_idx";
 
 const POSITION_EPSILON = 1e-9
 
 function point(p: kicad.Point) {
     return new Point(p.x, p.y)
+}
+
+export class NetConnection {
+    net: Net = new Net()
+    readonly position: Point
+    readonly pin: kicad.Pin
+    readonly symbol: kicad.Symbol
+
+    constructor(pin: kicad.Pin, symbol: kicad.Symbol, symbolCs: SchematicCoordinateSystem) {
+        this.position = symbolCs.point(pin.at)
+        this.pin = pin
+        this.symbol = symbol
+    }
 }
 
 export class NetSegment {
@@ -56,6 +72,7 @@ export class Net {
     name: string | undefined
     segments: NetSegment[]
     junctions: NetJunction[] = []
+    connections: NetConnection[] = []
 
     constructor(...segments: NetSegment[]) {
         this.segments = segments
@@ -65,6 +82,8 @@ export class Net {
     merge(net: Net) {
         if (this !== net) {
             this.addSegments(...net.segments)
+            this.addJunctions(...net.junctions)
+            this.addConnections(...net.connections)
             if (!this.name) this.name = net.name
         }
     }
@@ -79,16 +98,32 @@ export class Net {
         junctions.forEach(junction => junction.net = this)
     }
 
+    addConnections(...connections: NetConnection[]) {
+        this.connections.push(...connections)
+        connections.forEach(connection => connection.net = this)
+    }
+
 }
 
-export function getNetsFromSchematic(schematic: kicad.Schematic): Net[] {
-    return getNets(schematic.$wire, schematic.$label, schematic.$junction)
-}
+export function getNets(schematic: kicad.Schematic, symbolIdx: SymbolIdx): Net[] {
+    const wires = schematic.$wire
+    const labels = schematic.$label
+    const junctions = schematic.$junction
+    const symbols = schematic.$symbol
 
-export function getNets(wires?: kicad.Wire[], labels?: kicad.Label[], junctions?: kicad.Junction[]): Net[] {
+    const rootCs = new SchematicCoordinateSystem()
+    rootCs.angleSign = -1; //Schematic has reversed angle direction!
+
     if (wires) {
         const segments = wires.map(wire => new NetSegment(wire))
-        const netJunctions = junctions?.map(junction => new NetJunction(junction))
+        let netJunctions = junctions?.map(junction => new NetJunction(junction))
+        let netConnections = symbols?.flatMap(symbol => {
+            const symbolCs = rootCs.child(Transform.MIRROR_X.multiply(rootCs.getTransform(symbol.at, symbol.mirror)))
+            symbolCs.angleSign = 1
+            return symbolIdx.getSymbols(symbol).flatMap(libSymbol => {
+                return libSymbol.$pin?.map(pin => new NetConnection(pin, symbol, symbolCs)) ?? []
+            })
+        })
         const nets: Net[] = []
         segments.forEach(segment => {
             labels?.forEach(label => {
@@ -96,11 +131,23 @@ export function getNets(wires?: kicad.Wire[], labels?: kicad.Label[], junctions?
                     segment.net.name = label.text
                 }
             })
-            netJunctions?.forEach(junction => {
+
+            netJunctions = netJunctions?.filter(junction => {
                 if (segment.containsPoint(junction.position)) {
                     segment.net.addJunctions(junction)
+                    return false // Remove processed junction
                 }
+                return true
             })
+
+            netConnections = netConnections?.filter(connection => {
+                if (segment.containsPoint(connection.position)) {
+                    segment.net.addConnections(connection)
+                    return false // Remove processed connection
+                }
+                return true
+            })
+
             segments.forEach(otherSegment => {
                 if (segment.connectedTo(otherSegment)) {
                     //Merge nets

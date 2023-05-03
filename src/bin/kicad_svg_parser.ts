@@ -3,7 +3,7 @@
 import { exit } from "process";
 import * as fs from "fs" 
 import * as kicad_parser from "../index"
-import { platform } from "os";
+import { SchematicData } from "../kicad/schematic_data";
 
 if (process.argv.length < 3) {
     console.error("Expected usage: kicad_svg_parser <path to schematic file>")
@@ -18,6 +18,7 @@ const output_file_name = process.argv.length >= 4 ? process.argv[3] : schematic_
 const schematic_txt = fs.readFileSync(schematic_file_name, 'utf-8');
 // parse the schematic file contents
 const schematic = kicad_parser.readSchematic(schematic_txt)
+const data = new SchematicData(schematic)
 // log schematic version
 console.info(`Loaded schematic '${schematic_file_name}'`)
 console.info(`- version: ${schematic.version}`)
@@ -29,7 +30,7 @@ console.info(`- wires: ${schematic.$wire?.length ?? 0}`)
 const generator = new kicad_parser.SVGGenerator()
 // generate html file contents
 console.info(`Generating html for schematic...`)
-const html = generator.generateKicadStyleHTML(schematic)
+const html = generator.generateKicadStyleHTML(data)
 console.info(`Saving file '${output_file_name}'...`)
 // save html file
 fs.writeFileSync(output_file_name, html)

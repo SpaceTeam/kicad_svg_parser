@@ -1,8 +1,6 @@
-import * as kicad from "../kicad/kicad_types"
 import { SVGContext } from "./svg_context";
-import { SymbolIdx } from "../kicad/symbol_idx";
 import { getGraphicalSectionSVG, getContextDebugSVG } from "./svg_primitives";
-import { getNetsFromSchematic } from "../kicad/net";
+import { SchematicData } from "../kicad/schematic_data";
 import { indent } from "../util/string_util";
 import { getSymbolSVG } from "./svg_symbol";
 import { getNetSVG } from "./svg_net";
@@ -51,27 +49,24 @@ export class SVGGenerator {
         this.configuration = configuration ?? DEFAULT_CONFIGURAITON
     }
     
-    generateSVG(schematic: kicad.Schematic): string {
+    generateSVG(data: SchematicData): string {
         const ctx = new SVGContext(this.configuration);
         ctx.cs.angleSign = -1; //Schematic has reversed angle direction!
-    
-        let symbolIdx = new SymbolIdx()
-        symbolIdx.addLibrary(schematic.lib_symbols)
+        
     
         let svg = ""
     
         //DEBUG
         if(ctx.configuration.debug.DEBUG_CS_SCHEMATIC) svg += getContextDebugSVG(ctx);
     
-        schematic.$symbol?.forEach(symbol => {
-            svg += getSymbolSVG(symbol, symbolIdx, ctx) + "\n";
+        data.schematic.$symbol?.forEach(symbol => {
+            svg += getSymbolSVG(symbol, data.symbolIdx, ctx) + "\n";
         })
         svg += "<!-- graphics -->\n"
-        svg += getGraphicalSectionSVG(schematic, ctx);
+        svg += getGraphicalSectionSVG(data.schematic, ctx);
     
         svg += "<!-- wires -->\n"
-        const nets = getNetsFromSchematic(schematic)
-        nets.forEach(net => {
+        data.nets.forEach(net => {
             svg += getNetSVG(net, ctx) + "\n"
         })
     
@@ -103,7 +98,7 @@ svg {
     ${styleVars.DEFAULT_STROKE_COLOR}: maroon;
     ${styleVars.DEFAULT_FILL_COLOR}: lightyellow;
     ${styleVars.DEFAULT_STROKE_STYLE}: none;
-}
+}schematic
 .${classes.WIRE} {
     ${styleVars.DEFAULT_STROKE_COLOR}: green;
     ${styleVars.DEFAULT_FILL_COLOR}: green;
@@ -115,8 +110,8 @@ svg {
 `
     }
 
-    generateKicadStyleHTML(schematic: kicad.Schematic) {
-        const svg = this.generateSVG(schematic);
+    generateKicadStyleHTML(data: SchematicData) {
+        const svg = this.generateSVG(data);
         const css = this.generateKicadStyleCSS()
         return ""+
 `<!DOCTYPE html>
