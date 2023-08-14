@@ -1,5 +1,4 @@
 import { SchematicCoordinateSystem } from "../util/coordinate_system";
-import { toRad } from "../util/geom";
 import { Point, Transform } from "../util/geom";
 import * as kicad from "./kicad_types"
 import { SymbolIdx } from "./symbol_idx";
@@ -11,7 +10,7 @@ function point(p: kicad.Point) {
 }
 
 export class NetConnection {
-    net: Net = new Net()
+    net: Net = new Net("")
     readonly position: Point
     readonly pin: kicad.Pin
     readonly symbol: kicad.Symbol
@@ -24,7 +23,7 @@ export class NetConnection {
 }
 
 export class NetSegment {
-    net: Net = new Net(this)
+    net: Net
     readonly wire: kicad.Wire
     readonly start: Point
     readonly end: Point
@@ -41,6 +40,7 @@ export class NetSegment {
         this.length = diff.length()
         this.dir = diff.multiply(1/this.length)
         this.normal = this.dir.normal()
+        this.net = new Net(this.wire.uuid, this)
     }
 
     containsPoint(p: Point): boolean {
@@ -57,26 +57,29 @@ export class NetSegment {
 }
 
 export class NetJunction {
-    net: Net = new Net()
+    net: Net
     readonly junction: kicad.Junction
     readonly position: Point
 
     constructor(junction: kicad.Junction) {
         this.junction = junction
         this.position = point(junction.at)
+        this.net = new Net("")
     }
 }
 
 export class Net {
     //Internal id
+    uuid: string
     name: string | undefined
     segments: NetSegment[]
     junctions: NetJunction[] = []
     connections: NetConnection[] = []
 
-    constructor(...segments: NetSegment[]) {
+    constructor(uuid: string, ...segments: NetSegment[]) {
         this.segments = segments
         this.segments.forEach(s => s.net = this)
+        this.uuid = uuid
     }
 
     merge(net: Net) {
